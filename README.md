@@ -11,13 +11,13 @@ Prefix IP: 10.1
 ## Persyaratan
 ### Persyaratan 1
 Sebelum dapat melakukan iptables, hal pertama yang dapat dilakukan adalah membuat **topologi jaringan**, dimana nantinya Doriki akan berperan sebagai DNS Server, Jipangu sebagai DHCP Server, Maingate dan Jorge sebagai Web Server, Blueno sebagai client dengan jumlah host 100, Cipher sebagai client dengan jumlah host 700, Elena sebagai client dengan jumlah host 300, dan Fukurou sebagai client dengan jumlah host 200.
-![a1](https://user-images.githubusercontent.com/76677130/144767844-4c03e136-4634-4fad-802b-564b3b64d0a5.PNG)
+![a11](https://user-images.githubusercontent.com/76677130/144853283-f37a840c-3d57-40db-85be-5e01195ed54e.PNG)
 
 ### Persyaratan 2
 Selanjutnya, menentukan ip melalui **subnetting** dengan **teknik VLSM**.
 
-Pertama, melakukan _labeling_ pada setiap subnet.
-![Subnetting-label](https://user-images.githubusercontent.com/76677130/144771032-3e58a873-da02-4c5c-ad50-b89bff1713a4.png)
+Pertama, melakukan _labelling_ pada setiap subnet.
+![subnetting-labelling](https://user-images.githubusercontent.com/76677130/144853361-214542d9-51a9-4488-b00f-06e3065aaa1a.png)
 
 Kedua, menghitung jumlah ip yang dibutuhkan oleh setiap subnet.
 | Subnet	| Jumlah IP	| Netmask |
@@ -32,10 +32,10 @@ Kedua, menghitung jumlah ip yang dibutuhkan oleh setiap subnet.
 | A8	| 3	| /29 |
 | **Total**	| **1314**	| **/21** |
 
-Ketiga, menghitung pembagian IP dengan pohon berdasarkan netmask yang diperoleh melalui perhitungan jumlah ip (/21). 
+Ketiga, menghitung pembagian IP dengan pohon berdasarkan netmask yang diperoleh melalui perhitungan jumlah IP (/21). 
 ![Subnetting-tree](https://user-images.githubusercontent.com/76677130/144771035-00dbe5a6-09f2-48f6-a9fb-02ee3aa1ad3b.png)
 
-Keempat, memperoleh hasil dari perhitungan pembagian ip dengan pohon.
+Keempat, memperoleh hasil dari perhitungan pembagian IP dengan pohon.
 | Subnet	| NID	| Subnet Mask	| Broadcast Address |
 | :---: | :---: | :---: | :---: |
 | A1	| 10.1.0.8	| 255.255.255.248	| 10.1.0.15 |
@@ -47,7 +47,7 @@ Keempat, memperoleh hasil dari perhitungan pembagian ip dengan pohon.
 | A7	| 10.1.1.0	| 255.255.255.0	| 10.1.1.255 |
 | A8	| 10.1.0.16	| 255.255.255.248	| 10.1.0.23 |
 
-Kelima, mengatur ip untuk masing-masing interface pada setiap device dengan ip yang telah diperoleh. Namun, khusus untuk client akan diberikan ip dari dhcp.
+Kelima, mengatur IP untuk masing-masing interface pada setiap router dan server dengan IP yang telah diperoleh. IP pada interface client tidak diatur terlebih dahulu karena nantinya akan diatur menggunakan dhcp. Untuk mengatur IP pada interface dapat dilakukan dengan `klik kanan device` > `Configure` > `Edit network configuration`.
 * Foosha (Router)
   ```
   ## NAT+
@@ -92,12 +92,6 @@ Kelima, mengatur ip untuk masing-masing interface pada setiap device dengan ip y
     address 10.1.4.1
     netmask 255.255.252.0
   ```
-* Blueno (Client)
-  ```
-  ## A2+
-  auto eth0
-  iface eth0 inet dhcp
-  ```
 * Doriki (Server)
   ```
   ## A1+
@@ -105,7 +99,7 @@ Kelima, mengatur ip untuk masing-masing interface pada setiap device dengan ip y
   iface eth0 inet static
     address 10.1.0.10
     netmask 255.255.255.248
-      gateway 10.1.0.9
+    gateway 10.1.0.9
   ```
 * Jipangu (Server)
   ```
@@ -114,13 +108,7 @@ Kelima, mengatur ip untuk masing-masing interface pada setiap device dengan ip y
   iface eth0 inet static
     address 10.1.0.11
     netmask 255.255.255.248
-      gateway 10.1.0.9
-  ```
-* Chiper (Client)
-  ```
-  ## A3+
-  auto eth0
-  iface eth0 inet dhcp
+    gateway 10.1.0.9
   ```
 * Guanhao (Router)
   ```
@@ -145,12 +133,6 @@ Kelima, mengatur ip untuk masing-masing interface pada setiap device dengan ip y
     address 10.1.1.1
     netmask 255.255.255.0
   ```
-* Elena (Client)
-  ```
-  ## A6+
-  auto eth0
-  iface eth0 inet dhcp
-  ```
 * Jorge (Server)
   ```
   ## A8+
@@ -158,7 +140,7 @@ Kelima, mengatur ip untuk masing-masing interface pada setiap device dengan ip y
   iface eth0 inet static
     address 10.1.0.18
     netmask 255.255.255.248
-      gateway 10.1.0.17
+    gateway 10.1.0.17
   ```
 * Maingate (Server)
   ```
@@ -167,18 +149,13 @@ Kelima, mengatur ip untuk masing-masing interface pada setiap device dengan ip y
   iface eth0 inet static
     address 10.1.0.19
     netmask 255.255.255.248
-      gateway 10.1.0.17
+    gateway 10.1.0.17
   ```
-* Fukurou (Client)
-  ```
-  ## A7+
-  auto eth0
-  iface eth0 inet dhcp
-  ```
-  ![b1](https://user-images.githubusercontent.com/76677130/144836746-3ccebab4-ca48-442a-bc45-245bfc8708d7.PNG)
+  ![image](https://user-images.githubusercontent.com/76677130/144899027-f32c16d6-bc14-4621-ab2e-d2666448d8b8.png)
 
 ### Persyaratan 3
-Setelah memperoleh hasil pembagian ip melalui subnetting, dapat dilakukan routing pada router.
+Setelah memperoleh hasil pembagian ip melalui subnetting, dapat dilakukan **routing** pada router.
+
 * Foosha
     ```
   ## A4
@@ -203,18 +180,153 @@ Setelah memperoleh hasil pembagian ip melalui subnetting, dapat dilakukan routin
   ![c1](https://user-images.githubusercontent.com/76677130/144836769-58c3a8ad-7530-48b7-bb1e-4cb2cd53df09.PNG)
 
 ### Persyaratan 4
-Selanjutnya, memberikan ip pada subnet _client_ (Blueno, Cipher, Fukurou, dan Elena) secara dinamis menggunakan DHCP Server (Jipangu), dimana router yang menghubungkannya (Water7, Foosha, dan Guanhao) berperan sebagai DHCP Relay.
+Selanjutnya, memberikan **ip pada subnet client (Blueno, Cipher, Fukurou, dan Elena) secara dinamis** menggunakan DHCP Server (Jipangu), dimana router yang menghubungkannya (Water7, Foosha, dan Guanhao) berperan sebagai DHCP Relay.
 
-Pertama, 
+**DHCP Server**
+
+Pertama, install dhcp-server pada `Jipangu`.
+```
+apt-get update
+apt-get install isc-dhcp-server -y
+```
+
+Kedua, ubah interface pada file `/etc/default/isc-dhcp-server`.
+```
+INTERFACES="eth0"
+```
+
+Ketiga, ubah konfigurasi dhcp pada file `/etc/dhcp/dhcpd.conf`, dimana domain-name-servers mengarah ke Doriki (10.1.0.10) yang berperan sebagai DNS Server.
+```
+subnet 10.1.0.8 netmask 255.255.255.248 {
+
+}
+
+subnet 10.1.0.128 netmask 255.255.255.128 {
+    range 10.1.0.130 10.1.0.230;
+    option domain-name-servers 10.1.0.10;
+    option routers 10.1.0.129;
+    option broadcast-address 10.1.0.255;
+    default-lease-time 360;
+    max-lease-time 7200;
+}
+
+subnet 10.1.4.0 netmask 255.255.252.0 {
+    range 10.1.4.2 10.1.6.190;
+    option domain-name-servers 10.1.0.10;
+    option routers 10.1.4.1;
+    option broadcast-address 10.1.7.255;
+    default-lease-time 360;
+    max-lease-time 7200;
+}
+
+subnet 10.1.2.0 netmask 255.255.254.0 {
+    range 10.1.2.2 10.1.3.6;
+    option domain-name-servers 10.1.0.10;
+    option routers 10.1.2.1;
+    option broadcast-address 10.1.3.255;
+    default-lease-time 360;
+    max-lease-time 7200;
+}
+
+subnet 10.1.1.0 netmask 255.255.255.0 {
+    range 10.1.1.2 10.1.1.202;
+    option domain-name-servers 10.1.0.10;
+    option routers 10.1.1.1;
+    option broadcast-address 10.1.1.255;
+    default-lease-time 360;
+    max-lease-time 7200;
+}
+```
+
+Keempat, restart dhcp-server.
+```
+service isc-dhcp-server restart
+```
+
+**DHCP Relay**
+
+Pertama, install dhcp-relay pada roouter yang menghubungkan dhcp-server dengan client, yaitu `Water7`, `Foosha`, dan `Guanhao`.
+```
+apt-get update
+apt-get install isc-dhcp-relay -y
+```
+
+Kedua, ubah konfigurasi dhcp-relay pada file `/etc/default/isc-dhcp-relay`.
+* Water7
+  ```
+  SERVERS="10.1.0.10"
+  INTERFACES="eth0 eth1 eth2 eth3"
+  OPTIONS=""
+  ```
+* Foosha
+  ```
+  SERVERS="10.1.0.10"
+  INTERFACES="eth1 eth2"
+  OPTIONS=""
+  ```
+* Guanhao
+  ```
+  SERVERS="10.1.0.10"
+  INTERFACES="eth0 eth1 eth3"
+  OPTIONS=""
+  ```
+
+Ketiga, start dhcp-relay.
+```
+service isc-dhcp-relay start
+```
+
+**Client**
+
+Pertama, ubah konfigurasi interface dalam file `/etc/network/interfaces` pada client (`Blueno`, `Cipher`, `Fukurou`, dan `Elena`).
+```
+auto eth0
+iface eth0 inet dhcp
+```
+
+Kedua, restart node client pada GNS3.
 
 
 
+## Soal 1
+Pada soal ini diminta untuk menghubungkan topologi dengan jaringan luar melalui Foosha dengan menggunakan iptables tanpa MASQUERADE.
 
+### Pembahasan
 
+### Testing
 
+## Soal 2
+Pada soal ini diminta untuk men-drop semua akses HTTP dari luar topologi pada DHCP Server (Doriki) dan DNS Server (Jipangu).
 
+### Pembahasan
 
+### Testing
 
+## Soal 3
+Pada soal ini diminta untuk membatasi penerimaan koneksi ICMP pada DHCP Server dan DNS Server, dimana kedua server tersebut hanya dapat menerima maksimal 3 koneksi secara bersamaan dan selebihnya di-drop.
 
+### Pembahasan
 
+### Testing
+
+## Soal 4
+Pada soal ini diminta untuk hanya memperbolehkan akses ke Doriki yang berasal dari subnet Blueno dan Cipher pada pukul 07.00 - 15.00 di hari Senin sampai Kamis, sedangkan waktu lainnya di-reject.
+
+### Pembahasan
+
+### Testing
+
+## Soal 5
+Pada soal ini diminta untuk hanya memperbolehkan akses ke Doriki dari subnet Elena dan Fukuro pada pukul 15.01 - 06.59 setiap harinya, sedangkan waktu lainnya di-reject.
+
+### Pembahasan
+
+### Testing
+
+## Soal 6
+Pada soal ini diminta untuk mengatur Guanhao sehingga setiap request dari client yang mengakses DNS Server akan didistribusikan secara bergantian pada Web Server Jorge dan Maingate.
+
+### Pembahasan
+
+### Testing
 
