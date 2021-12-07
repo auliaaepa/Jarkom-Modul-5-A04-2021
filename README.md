@@ -151,11 +151,14 @@ Kelima, mengatur IP untuk masing-masing interface pada setiap router dan server 
     netmask 255.255.255.248
     gateway 10.1.0.17
   ```
-  ![image](https://user-images.githubusercontent.com/76677130/144899027-f32c16d6-bc14-4621-ab2e-d2666448d8b8.png)
+  ![b1-crop](https://user-images.githubusercontent.com/76677130/144993966-6cc69ddc-e7b9-40d8-99df-934ea2963d72.png)
 
 ### Persyaratan 3
-Setelah memperoleh hasil pembagian ip melalui subnetting, dapat dilakukan **routing** pada router.
+Setelah memperoleh hasil pembagian ip melalui subnetting, dapat dilakukan **routing** pada router. 
 
+Sebelum melakukan routing, dapat dilakukan ip forwarding pada setiap router. IP forwarding dilakukan dengan mengubah file `/etc/sysctl.conf` menjadi `net.ipv4.ip_forward=1`. Kemudian, jalankan command `sysctl -p` untuk mengaktifkan perubahan yang dilakukan.
+  
+Routing pada router dapat dilakukan dengan command berikut ini.
 * Foosha
     ```
   ## A4
@@ -251,22 +254,22 @@ apt-get update
 apt-get install isc-dhcp-relay -y
 ```
 
-Kedua, ubah konfigurasi dhcp-relay pada file `/etc/default/isc-dhcp-relay`.
+Kedua, ubah konfigurasi dhcp-relay pada file `/etc/default/isc-dhcp-relay`, dimana server mengarah ke Jipangu sebagai DHCP Server (10.1.0.11) dan interface menyesuaikan interface yang digunakan untuk relay di setiap routernya, baik dari sumber relay maupun ke tujuan (client atau route relay lainnya). 
 * Water7
   ```
-  SERVERS="10.1.0.10"
+  SERVERS="10.1.0.11"
   INTERFACES="eth0 eth1 eth2 eth3"
   OPTIONS=""
   ```
 * Foosha
   ```
-  SERVERS="10.1.0.10"
+  SERVERS="10.1.0.11"
   INTERFACES="eth1 eth2"
   OPTIONS=""
   ```
 * Guanhao
   ```
-  SERVERS="10.1.0.10"
+  SERVERS="10.1.0.11"
   INTERFACES="eth0 eth1 eth3"
   OPTIONS=""
   ```
