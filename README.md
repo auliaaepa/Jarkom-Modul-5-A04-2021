@@ -296,12 +296,19 @@ Pada soal ini diminta untuk menghubungkan topologi dengan jaringan luar melalui 
 
 ### Pembahasan
 
+## Nomor 1 - keluar
+## Foosha
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT -s 10.1.0.0/21 --to-source 192.168.122.1
+
 ### Testing
 
 ## Soal 2
 Pada soal ini diminta untuk men-drop semua akses HTTP dari luar topologi pada DHCP Server (Doriki) dan DNS Server (Jipangu).
 
 ### Pembahasan
+## Nomor 2 - drop http pada dns dhcp server
+### Foosha
+iptables -A FORWARD -d 10.1.0.8/29 -i eth0 -p tcp --dport 80 -j DROP
 
 ### Testing
 
@@ -309,6 +316,12 @@ Pada soal ini diminta untuk men-drop semua akses HTTP dari luar topologi pada DH
 Pada soal ini diminta untuk membatasi penerimaan koneksi ICMP pada DHCP Server dan DNS Server, dimana kedua server tersebut hanya dapat menerima maksimal 3 koneksi secara bersamaan dan selebihnya di-drop.
 
 ### Pembahasan
+## Nomor 3 - max 3 koneksi icmp dalam 1 waktu pada dns dhcp server
+## Diroki (DNS Server)
+iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
+
+## Jipangu (DHCP-Server)
+iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
 
 ### Testing
 
