@@ -290,13 +290,11 @@ iface eth0 inet dhcp
 Kedua, restart node client pada GNS3.
 
 
-
 ## Soal 1
 Pada soal ini diminta untuk menghubungkan topologi dengan jaringan luar melalui Foosha dengan menggunakan iptables tanpa MASQUERADE.
 
 ### Pembahasan
-
-### Nomor 1 - keluar
+### Nomor 1 - Keluar
 #### Foosha
 ```iptables -t nat -A POSTROUTING -o eth0 -j SNAT -s 10.1.0.0/21 --to-source 192.168.122.1```
 
@@ -306,7 +304,7 @@ Pada soal ini diminta untuk menghubungkan topologi dengan jaringan luar melalui 
 Pada soal ini diminta untuk men-drop semua akses HTTP dari luar topologi pada DHCP Server (Doriki) dan DNS Server (Jipangu).
 
 ### Pembahasan
-### Nomor 2 - drop http pada dns dhcp server
+### Nomor 2 - Drop http pada dns dhcp server
 #### Foosha
 ```iptables -A FORWARD -d 10.1.0.8/29 -i eth0 -p tcp --dport 80 -j DROP```
 
@@ -316,7 +314,7 @@ Pada soal ini diminta untuk men-drop semua akses HTTP dari luar topologi pada DH
 Pada soal ini diminta untuk membatasi penerimaan koneksi ICMP pada DHCP Server dan DNS Server, dimana kedua server tersebut hanya dapat menerima maksimal 3 koneksi secara bersamaan dan selebihnya di-drop.
 
 ### Pembahasan
-### Nomor 3 - max 3 koneksi icmp dalam 1 waktu pada dns dhcp server
+### Nomor 3 - Max 3 koneksi icmp dalam 1 waktu pada dns dhcp server
 #### Diroki (DNS Server)
 ```iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP```
 
@@ -329,6 +327,13 @@ Pada soal ini diminta untuk membatasi penerimaan koneksi ICMP pada DHCP Server d
 Pada soal ini diminta untuk hanya memperbolehkan akses ke Doriki yang berasal dari subnet Blueno dan Cipher pada pukul 07.00 - 15.00 di hari Senin sampai Kamis, sedangkan waktu lainnya di-reject.
 
 ### Pembahasan
+### Nomor 4 - Boleh akses dari blueno chiper ke doriki pada senin-kamis 7-15
+### Doriki
+```iptables -A INPUT -s 10.1.0.128/25 -m time --timestart 07:00 --timestop 15:00 --weekdays Mon,Tue,Wed,Thu -j ACCEPT
+iptables -A INPUT -s 10.1.0.128/25 -j REJECT 
+iptables -A INPUT -s 10.1.4.0/22 -m time --timestart 07:00 --timestop 15:00 --weekdays Mon,Tue,Wed,Thu -j ACCEPT
+iptables -A INPUT -s 10.1.4.0/22 -j REJECT
+```
 
 ### Testing
 
@@ -336,6 +341,13 @@ Pada soal ini diminta untuk hanya memperbolehkan akses ke Doriki yang berasal da
 Pada soal ini diminta untuk hanya memperbolehkan akses ke Doriki dari subnet Elena dan Fukuro pada pukul 15.01 - 06.59 setiap harinya, sedangkan waktu lainnya di-reject.
 
 ### Pembahasan
+### Nomor 5 - Boleh akses dari elena fukurou ke doriki pada setiap hari 15.01-6.59
+### Doriki
+```iptables -A INPUT -s 10.1.2.0/23 -m time --timestart 15:01 --timestop 06:59 -j ACCEPT
+iptables -A INPUT -s 10.1.2.0/23 -j REJECT
+iptables -A INPUT -s 10.1.1.0/24 -m time --timestart 15:01 --timestop 06:59 -j ACCEPT
+iptables -A INPUT -s 10.1.1.0/24 -j REJECT
+```
 
 ### Testing
 
@@ -343,6 +355,11 @@ Pada soal ini diminta untuk hanya memperbolehkan akses ke Doriki dari subnet Ele
 Pada soal ini diminta untuk mengatur Guanhao sehingga setiap request dari client yang mengakses DNS Server akan didistribusikan secara bergantian pada Web Server Jorge dan Maingate.
 
 ### Pembahasan
+### Nomor 6 - Request DNS pada guanhao didistribusikan pada jorge maingate
+```iptables -t nat -A PREROUTING -p tcp -d 10.1.0.10 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 10.1.0.18:80
+iptables -t nat -A PREROUTING -p tcp -d 10.1.0.10 -j DNAT --to-destination 10.1.0.19:80
+iptables -t nat -A POSTROUTING -p tcp -d 10.1.0.18 --dport 80 -j SNAT --to-source 10.1.0.10
+iptables -t nat -A POSTROUTING -p tcp -d 10.1.0.19 --dport 80 -j SNAT --to-source 10.1.0.10
+```
 
 ### Testing
-
